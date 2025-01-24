@@ -87,6 +87,8 @@ import edu.semeru.android.testing.helpers.ScreenActionData;
 import edu.semeru.android.testing.helpers.ScreenshotModifier;
 import edu.semeru.android.testing.helpers.TerminalHelper;
 
+import io.github.cdimascio.dotenv.*;
+
 
 
 /**
@@ -122,6 +124,11 @@ public class CrashScope extends GeneralStrategy {
     private CrashScopeSettings strategy = new CrashScopeSettings(); // Holds the combination of strategy settings in a singelton for AndroidLS
     boolean gnuCash = false;
 
+    
+    
+    // ENV LOADER
+  
+    
     /**
      * @author KevinMoran
      * 
@@ -156,6 +163,9 @@ public class CrashScope extends GeneralStrategy {
     ClassNotFoundException, SQLException, JsonIOException, IOException {
 
         
+    	
+    	Dotenv dotenv = EnvLoader.getDotEnvInstance();
+    	
         // TO BE CONFIGURED
         // This should be a path to a text file that contains a list of apk paths to be run. 
         // Each line should consist of a path to a given apk file.
