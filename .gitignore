@@ -26,3 +26,5 @@ local.properties
 *.launch
 Outputs/
 /ui_dump.xml
+.env
+libs/
