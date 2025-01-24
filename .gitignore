@@ -27,4 +27,4 @@ local.properties
 Outputs/
 /ui_dump.xml
 .env
-libs/
+lib/
