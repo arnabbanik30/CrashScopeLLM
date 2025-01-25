@@ -28,3 +28,4 @@ Outputs/
 /ui_dump.xml
 .env
 lib/
+data/
