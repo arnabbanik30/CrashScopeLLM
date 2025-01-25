@@ -87,9 +87,6 @@ import edu.semeru.android.testing.helpers.ScreenActionData;
 import edu.semeru.android.testing.helpers.ScreenshotModifier;
 import edu.semeru.android.testing.helpers.TerminalHelper;
 
-import io.github.cdimascio.dotenv.*;
-
-
 
 /**
  * @author KevinMoran
@@ -160,29 +157,27 @@ public class CrashScope extends GeneralStrategy {
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException,
-    ClassNotFoundException, SQLException, JsonIOException, IOException {
+    ClassNotFoundException, SQLException, JsonIOException, IOException, Exception {
 
-        
-    	
-    	Dotenv dotenv = EnvLoader.getDotEnvInstance();
+        EnvLoader envLoader = new EnvLoader();
     	
         // TO BE CONFIGURED
         // This should be a path to a text file that contains a list of apk paths to be run. 
         // Each line should consist of a path to a given apk file.
-        String apkFile = "apps.txt";
+        String apkFile = envLoader.getApkFile();
         
         
         // TO BE CONFIGURED
         // This path should point to the aapt tool that is included with the Android SDK.
         // The current version of CrashScope was tested with version 25.0.1
-        String aaptPath = "AndroidSDK/sdk/build-tools/25.0.1";
+        String aaptPath = envLoader.getAaptPath();
         
         
         // TO BE CONFIGURED
         // This path should point to an empty folder where CrashScope will store some
         // both temporary data generated during execution, and the final output 
         // execution json files.
-        String dataFolder = "/Users/KevinMoran/Desktop/CrashScope-Data/";
+        String dataFolder = envLoader.getDataFolder();
         
         ArrayList<App> bugRepApps = generateBugRepData(apkFile,aaptPath);
 
