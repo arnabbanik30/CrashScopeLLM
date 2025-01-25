@@ -44,5 +44,21 @@ public class EnvLoader {
 		return getKeyValue("DATA_FOLDER", 
 				"No DATA_FOLDER key found in the .env FILE");
 	}
+	public String getScriptsPath() throws Exception {
+		return getKeyValue("SCRIPTS_PATH", 
+				"No SCRIPTS_PATH key found in the .env FILE");
+	}
+	public String getAndroidSdkPath() throws Exception {
+		return getKeyValue("ANDROID_SDK_PATH", 
+				"No ANDROID_SDK_PATH key found in the .env FILE");
+	}
+	public String getAvdPort() throws Exception {
+		return getKeyValue("AVD_PORT", 
+				"No AVD_PORT key found in the .env FILE");
+	}
+	public String getAbdPort() throws Exception {
+		return getKeyValue("ABD_PORT", 
+				"No ABD_PORT key found in the .env FILE");
+	}
 	
 }

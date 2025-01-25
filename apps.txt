@@ -1,1 +1,1 @@
-test.apk
+./apps/mileage.apk

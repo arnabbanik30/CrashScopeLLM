@@ -121,8 +121,6 @@ public class CrashScope extends GeneralStrategy {
     private CrashScopeSettings strategy = new CrashScopeSettings(); // Holds the combination of strategy settings in a singelton for AndroidLS
     boolean gnuCash = false;
 
-    
-    
     // ENV LOADER
   
     
@@ -154,12 +152,16 @@ public class CrashScope extends GeneralStrategy {
         this.scriptsPath = scriptsPath;
         this.strategy = strategy;
         this.deviceType = deviceHelper.getDEVICE_TYPE();
+        
+        
+       
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException,
     ClassNotFoundException, SQLException, JsonIOException, IOException, Exception {
 
-        EnvLoader envLoader = new EnvLoader();
+    	EnvLoader envLoader = new EnvLoader();
+    	
     	
         // TO BE CONFIGURED
         // This should be a path to a text file that contains a list of apk paths to be run. 
@@ -211,7 +213,7 @@ public class CrashScope extends GeneralStrategy {
      * @throws JsonIOException
      * @throws IOException
      */
-    public static void runCrashScopeLocal(App testApp, String dataFolder) throws JsonIOException, IOException {
+    public static void runCrashScopeLocal(App testApp, String dataFolder) throws JsonIOException, IOException, Exception{
 
         CrashScopeSettings strategy = new CrashScopeSettings();
         strategy.setTopDown(true);
@@ -222,21 +224,24 @@ public class CrashScope extends GeneralStrategy {
         strategy.setExpectedText(true);
         strategy.setNoText(false);
 
+        
+        EnvLoader envLoader = new EnvLoader();
+        
         // TO BE CONFIGURED
         // This is the path the scripts folder in the crashscope execution engine project.
         // Should be updated to the appropriate path once you clone the project.
-        String scriptsPath = "crashscope-execution-engine/scripts";
+        String scriptsPath = envLoader.getScriptsPath();
       
         // TO BE CONFIGURED
         // This is the path to the root of your Android SDK folder.
         // CrashScope uses various tools included with the Android SDK to ineract with devices and emualtors.
-        String androidSDKPath = "/Applications/AndroidSDK/sdk";
+        String androidSDKPath = envLoader.getAndroidSdkPath();
               
 
         // These are the default emulator paths for most systems.
         // These should only be updated if you are using a non-default emulator path.
-        String avdPort = "5554";
-        String adbPort = "5037";
+        String avdPort = envLoader.getAvdPort();
+        String adbPort = envLoader.getAbdPort();
         
         
         TypeDeviceEnum deviceType = UiAutoConnector.TypeDeviceEnum.EMULATOR;
