@@ -30,3 +30,4 @@ Outputs/
 lib/
 data/
 apps/*
+myenv/*
