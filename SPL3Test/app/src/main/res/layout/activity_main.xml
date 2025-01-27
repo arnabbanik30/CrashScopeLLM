@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".MainActivity">
+
+<!--    <TextView-->
+<!--        android:id="@+id/textView"-->
+<!--        android:layout_width="332dp"-->
+<!--        android:layout_height="580dp"-->
+<!--        android:layout_weight="2"-->
+<!--        android:height="200dp"-->
+<!--        android:maxHeight="200dp"-->
+<!--        android:text="SPL3 Test" />-->
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SPL3 Test"
+        android:textAlignment="center"
+        android:textSize="48sp" />
+
+    <Button
+        android:id="@+id/btn_bmi_calculator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BMI Calculator" />
+
+    <Button
+        android:id="@+id/btn_sqrt_calculator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Square Root Calculator" />
+
+</LinearLayout>
