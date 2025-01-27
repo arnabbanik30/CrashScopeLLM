@@ -88,7 +88,6 @@ import edu.semeru.android.testing.helpers.ScreenshotModifier;
 import edu.semeru.android.testing.helpers.TerminalHelper;
 
 
-
 /**
  * @author KevinMoran
  *
@@ -122,6 +121,9 @@ public class CrashScope extends GeneralStrategy {
     private CrashScopeSettings strategy = new CrashScopeSettings(); // Holds the combination of strategy settings in a singelton for AndroidLS
     boolean gnuCash = false;
 
+    // ENV LOADER
+  
+    
     /**
      * @author KevinMoran
      * 
@@ -150,29 +152,34 @@ public class CrashScope extends GeneralStrategy {
         this.scriptsPath = scriptsPath;
         this.strategy = strategy;
         this.deviceType = deviceHelper.getDEVICE_TYPE();
+        
+        
+       
     }
 
     public static void main(String[] args) throws InstantiationException, IllegalAccessException,
-    ClassNotFoundException, SQLException, JsonIOException, IOException {
+    ClassNotFoundException, SQLException, JsonIOException, IOException, Exception {
 
-        
+    	EnvLoader envLoader = new EnvLoader();
+    	
+    	
         // TO BE CONFIGURED
         // This should be a path to a text file that contains a list of apk paths to be run. 
         // Each line should consist of a path to a given apk file.
-        String apkFile = "apps.txt";
+        String apkFile = envLoader.getApkFile();
         
         
         // TO BE CONFIGURED
         // This path should point to the aapt tool that is included with the Android SDK.
         // The current version of CrashScope was tested with version 25.0.1
-        String aaptPath = "AndroidSDK/sdk/build-tools/25.0.1";
+        String aaptPath = envLoader.getAaptPath();
         
         
         // TO BE CONFIGURED
         // This path should point to an empty folder where CrashScope will store some
         // both temporary data generated during execution, and the final output 
         // execution json files.
-        String dataFolder = "/Users/KevinMoran/Desktop/CrashScope-Data/";
+        String dataFolder = envLoader.getDataFolder();
         
         ArrayList<App> bugRepApps = generateBugRepData(apkFile,aaptPath);
 
@@ -180,12 +187,15 @@ public class CrashScope extends GeneralStrategy {
         
         for(App currApp: bugRepApps) {
             
-            
+            String nameString = dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator;
             File currAppDataFolder = new File(dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator);
             
             if (!currAppDataFolder.exists()) {
                 currAppDataFolder.mkdirs();
             }
+//            else {
+////            	nameString = dataFolder + File.separator + currApp.getPackageName() + "-" + String(parseInt(currApp.getVersion()) + 1) + File.separator
+//            }
 
             System.out.println("Running Crashscope on App:" + currApp.getName());
             runCrashScopeLocal(currApp,dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator);
@@ -206,7 +216,7 @@ public class CrashScope extends GeneralStrategy {
      * @throws JsonIOException
      * @throws IOException
      */
-    public static void runCrashScopeLocal(App testApp, String dataFolder) throws JsonIOException, IOException {
+    public static void runCrashScopeLocal(App testApp, String dataFolder) throws JsonIOException, IOException, Exception{
 
         CrashScopeSettings strategy = new CrashScopeSettings();
         strategy.setTopDown(true);
@@ -217,21 +227,24 @@ public class CrashScope extends GeneralStrategy {
         strategy.setExpectedText(true);
         strategy.setNoText(false);
 
+        
+        EnvLoader envLoader = new EnvLoader();
+        
         // TO BE CONFIGURED
         // This is the path the scripts folder in the crashscope execution engine project.
         // Should be updated to the appropriate path once you clone the project.
-        String scriptsPath = "crashscope-execution-engine/scripts";
+        String scriptsPath = envLoader.getScriptsPath();
       
         // TO BE CONFIGURED
         // This is the path to the root of your Android SDK folder.
         // CrashScope uses various tools included with the Android SDK to ineract with devices and emualtors.
-        String androidSDKPath = "/Applications/AndroidSDK/sdk";
+        String androidSDKPath = envLoader.getAndroidSdkPath();
               
 
         // These are the default emulator paths for most systems.
         // These should only be updated if you are using a non-default emulator path.
-        String avdPort = "5554";
-        String adbPort = "5037";
+        String avdPort = envLoader.getAvdPort();
+        String adbPort = envLoader.getAbdPort();
         
         
         TypeDeviceEnum deviceType = UiAutoConnector.TypeDeviceEnum.EMULATOR;
@@ -1948,7 +1961,7 @@ public class CrashScope extends GeneralStrategy {
             //Parse the application 
             appPackageName = appInfo.substring(appInfo.indexOf("name=")+6, appInfo.indexOf("versionCode")-2);
             System.out.println("Package Name: " + appPackageName);
-            appName = appInfo.substring(appInfo.indexOf("application: label='")+20, appInfo.indexOf("icon=")-2);
+//            appName = appInfo.substring(appInfo.indexOf("application: label='")+20, appInfo.indexOf("icon=")-2);
             System.out.println("App Name: " + appName);
             appMainActivity = appInfo.substring(appInfo.indexOf("launchable-activity: name='")+27);
             appMainActivity = appMainActivity.substring(0, appMainActivity.indexOf(' ')-1);
