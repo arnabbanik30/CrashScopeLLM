@@ -187,12 +187,15 @@ public class CrashScope extends GeneralStrategy {
         
         for(App currApp: bugRepApps) {
             
-            
+            String nameString = dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator;
             File currAppDataFolder = new File(dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator);
             
             if (!currAppDataFolder.exists()) {
                 currAppDataFolder.mkdirs();
             }
+//            else {
+////            	nameString = dataFolder + File.separator + currApp.getPackageName() + "-" + String(parseInt(currApp.getVersion()) + 1) + File.separator
+//            }
 
             System.out.println("Running Crashscope on App:" + currApp.getName());
             runCrashScopeLocal(currApp,dataFolder + File.separator + currApp.getPackageName() + "-" + currApp.getVersion() + File.separator);
@@ -1958,7 +1961,7 @@ public class CrashScope extends GeneralStrategy {
             //Parse the application 
             appPackageName = appInfo.substring(appInfo.indexOf("name=")+6, appInfo.indexOf("versionCode")-2);
             System.out.println("Package Name: " + appPackageName);
-            appName = appInfo.substring(appInfo.indexOf("application: label='")+20, appInfo.indexOf("icon=")-2);
+//            appName = appInfo.substring(appInfo.indexOf("application: label='")+20, appInfo.indexOf("icon=")-2);
             System.out.println("App Name: " + appName);
             appMainActivity = appInfo.substring(appInfo.indexOf("launchable-activity: name='")+27);
             appMainActivity = appMainActivity.substring(0, appMainActivity.indexOf(' ')-1);

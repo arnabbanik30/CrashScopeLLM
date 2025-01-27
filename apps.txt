@@ -1,1 +1,1 @@
-./apps/mileage.apk
+./apps/demo.apk
