@@ -31,3 +31,4 @@ lib/
 data/
 apps/*
 myenv/*
+.idea/*

@@ -6,6 +6,12 @@ import time
 import random
 from enum import Enum
 
+import langchain
+
+from langchain_ollama import ChatOllama
+from langchain.output_parsers import CommaSeparatedListOutputParser
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 from uiautomator2.xpath import XMLElement
 
 # Numbers to insert into text fields
@@ -127,41 +133,94 @@ def interact_ui(element: u2.xpath.XMLElement, device):
         except Exception as e:
             print(f"Error setting text: {e}")
 
+def get_concise_node_info(node):
 
+    bounds = node.info['bounds']
+    x = (bounds['left'] + bounds['right']) / 2
+    y = (bounds['top'] + bounds['bottom']) / 2
 
+    concise_node = {
+        'element_text': node.info['text'],
+        'resourceId' :  node.info['resourceId'],
+        'packageName':  node.info['packageName'],
+        'className' :   node.info['className'],
+        'click_coordinates': (x, y),
+        'element_type': node.info['className'],
+        'is_clickable': node.info['clickable'],
+        'bounds': bounds,
+
+    }
+    # print(concise_node)
+    return concise_node
+messages = []
 def dfs(nodes, package_name, device: u2.Device):
-    app_crashed = 0
+    llm_messages = []
     for node in nodes:
-        before_activity = device.app_current()['activity']
-        current_activity = before_activity
-        if checkVisited(node) == VISITED.NOT_EXPLORED:
-            visited[node] = VISITED.EXPLORING
-            # print("Exploring : ")
-            # print(node.info)
-            interact_ui(node, device)
-            try:
-                # app_status = device.app_wait(package_name)
-                current_package = device.app_current()['package']
-                if current_package != package_name:
-                    print("App has stopped running!")
-                    return 1
-                # else:
-                #     print("App is running.")
-            except Exception as e:
-                print(f"Error checking app status: {e}")
+        if node.info['resourceId'] == "" or "layout" in node.info['className'].lower():
+            continue
+        llm_messages.append(str(get_concise_node_info(node)))
+        # print(get_concise_node_info(node))
+        # print('\n' * 2)
+    messages.append(
+        {
+        'role': 'user',
+        'content': " ".join(llm_messages)
+        })
+    messages.append(
+        {
+            'role' : 'user',
+            'content': 'based on whats given, write one or more adb shell inputs to interact with it. Only interact with Button or EditText elements. Use the click_coordinates to interact. prefer clicking input fields or buttons over labels. Only output shell commands(input, tap or sleep), write only the commands, not markdown'
+            # 'content': 'select a button to press. output an adb shell tap command with proper coordinates.'
+        })
+    messages.append(
+        {
+            'role': 'assistant',
+            'content': 'adb shell input tap 100 100',
+        }
+    )
+    print("starting ollama")
+    response = ollama.chat(
+        model=model,
+        messages=messages
+    )
+    
+    assistant_message = response['message']['content']
+    print(f"ADB Assistant: {assistant_message}\n")
 
-            current_activity = device.app_current()['activity']
+    # llama_msgs = [{
+    #     'role' : 'user'
+    #
+    # }]
+    # for node in nodes:
+    #     before_activity = device.app_current()['activity']
+    #     current_activity = before_activity
+    #     if checkVisited(node) == VISITED.NOT_EXPLORED:
+    #         visited[node] = VISITED.EXPLORING
+    #         # print("Exploring : ")
+    #         # print(node.info)
+    #         interact_ui(node, device)
+    #         try:
+    #             # app_status = device.app_wait(package_name)
+    #             current_package = device.app_current()['package']
+    #             if current_package != package_name:
+    #                 print("App has stopped running!")
+    #                 return 1
+    #             # else:
+    #             #     print("App is running.")
+    #         except Exception as e:
+    #             print(f"Error checking app status: {e}")
 
-            if before_activity != current_activity:
-                print("Activity changed!")
-                xpath = getPackageXpath(package_name)
-                nodes = getActivityInfo(xpath, device)
-                app_crashed = dfs(nodes.all(), package_name, device)
-        if app_crashed == 1:
-            return 1
-        visited[node] = VISITED.DONE_EXPLORING
-        if before_activity != current_activity:
-            device.press("back")
+    #         current_activity = device.app_current()['activity']
+
+    #         if before_activity != current_activity:
+    #             print("Activity changed!")
+    #             xpath = getPackageXpath(package_name)
+    #             nodes = getActivityInfo(xpath, device)
+    #             dfs(nodes.all(), package_name, device)
+
+    #     visited[node] = VISITED.DONE_EXPLORING
+    #     if before_activity != current_activity:
+    #         device.press("back")
 
 def getPackageXpath(package_name):
     return f"//*[@package='{package_name}']"
@@ -170,6 +229,17 @@ def getActivityInfo(xpath, device):
     nodes = device.xpath(xpath)
     return nodes
 
+import ollama
+
+# messages = [{
+#     'role': 'system',
+#     'content': 'You are a tool to generate bash commands. You can generate commands using adb shell only. Output the commands in plain text, not markdown. Do not write anything extra.'
+# }]
+
+# model="qwen2.5-coder:1.5b"
+# model = "deepseek-r1:1.5b"
+# model="deepseek-coder:1.3b"
+model = "adbllm"
 def main():
     """
     Main function to start the script.
@@ -206,6 +276,7 @@ def main():
         xpath = getPackageXpath(package_name)
 
         nodes = getActivityInfo(xpath, device)
+
         dfs(nodes.all(), package_name, device)
 
 
