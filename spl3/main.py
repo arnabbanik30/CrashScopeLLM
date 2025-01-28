@@ -4,8 +4,10 @@ import sys
 from apk_install import install_apk
 from arg_parser import parser
 from dfs_basic import dfs
+from formatted_time import get_formatted_time
 from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
+from globals import start_time
 from launch_app import launch_app
 from package_name import get_package_name
 import uiautomator2 as u2
@@ -38,8 +40,10 @@ def main():
 
     launch_app(package_name)
 
+    # set_start_time()
 
     append_and_print_report("Starting UI exploration...")
+    append_and_print_report(f"Exploration Start Time: {start_time}")
     try:
         xpath = get_package_xpath(package_name)
 
