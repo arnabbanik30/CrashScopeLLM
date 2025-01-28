@@ -1,8 +1,11 @@
 import subprocess
 
+from run_report import append_and_print_report
+
+
 def get_package_name(apk_path):
 
-    print("Extracting package name from the APK...")
+    append_and_print_report("Extracting package name from the APK...")
     try:
         # Use aapt to get package details
         result = subprocess.run(
@@ -14,10 +17,10 @@ def get_package_name(apk_path):
         for line in result.stdout.splitlines():
             if line.startswith("package:"):
                 package_name = line.split("'")[1]
-                print(f"Package name: {package_name}")
+                append_and_print_report(f"Package name: {package_name}")
                 return package_name
     except FileNotFoundError:
-        print("Error: 'aapt' tool is not installed or not in PATH. Install Android SDK Build-Tools.")
+        append_and_print_report("Error: 'aapt' tool is not installed or not in PATH. Install Android SDK Build-Tools.")
     except subprocess.CalledProcessError as e:
-        print(f"Error extracting package name: {e.stderr}")
+        append_and_print_report(f"Error extracting package name: {e.stderr}")
     return None

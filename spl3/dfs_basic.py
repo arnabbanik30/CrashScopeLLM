@@ -3,6 +3,7 @@ from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
 from globals import visited
 from interact_ui import interact_ui
+from run_report import append_and_print_report
 from visited import VISITED
 
 import uiautomator2 as u2
@@ -21,17 +22,17 @@ def dfs(nodes, package_name, device: u2.Device):
                 # app_status = device.app_wait(package_name)
                 current_package = device.app_current()['package']
                 if current_package != package_name:
-                    print("App has stopped running!")
+                    append_and_print_report("App has CRASHED!!!")
                     return 1
                 # else:
                 #     print("App is running.")
             except Exception as e:
-                print(f"Error checking app status: {e}")
+                append_and_print_report(f"Error checking app status: {e}")
 
             current_activity = device.app_current()['activity']
 
             if before_activity != current_activity:
-                print("Activity changed!")
+                append_and_print_report("Activity changed!")
                 xpath = get_package_xpath(package_name)
                 nodes = get_activity_info(xpath, device)
                 app_crashed = dfs(nodes.all(), package_name, device)
@@ -39,4 +40,5 @@ def dfs(nodes, package_name, device: u2.Device):
             return 1
         visited[node] = VISITED.DONE_EXPLORING
         if before_activity != current_activity:
+            append_and_print_report("Going back")
             device.press("back")
