@@ -30,3 +30,5 @@ Outputs/
 lib/
 data/
 apps/*
+myenv/*
+.idea/*
