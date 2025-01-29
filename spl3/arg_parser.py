@@ -25,4 +25,16 @@ parser.add_argument(
     action="store_true"
 )
 
+
+parser.add_argument(
+    "--run-replayable-script",
+    help="flag to run the replayable script",
+    action="store_true"
+)
+
+parser.add_argument(
+    "-s", "--script-path",
+    help="The path to the script file (required)",
+    required=False
+)
 argcomplete.autocomplete(parser)

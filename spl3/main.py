@@ -14,6 +14,7 @@ from launch_app import launch_app
 from package_name import get_package_name
 import uiautomator2 as u2
 
+from replayable_script_runner import script_runner
 from run_report import append_and_print_report
 from save_files import save_files
 from summarize_crash_report import get_crash_summary
@@ -26,6 +27,14 @@ def main():
     if args.analyze:
         if args.apk_path is None:
             print("the path option -p is required with --analyze")
+            exit(1)
+
+    if args.run_replayable_script:
+        if args.script_path is None:
+            print("provide the script path with -s or --script-path")
+            exit(1)
+        if args.apk_path is None:
+            print("the path option -p is required")
             exit(1)
 
     if len(sys.argv) == 1:
@@ -50,6 +59,9 @@ def main():
     launch_app(package_name)
 
     # set_start_time()
+    if args.run_replayable_script:
+        script_runner(args.script_path)
+        exit(0)
 
     append_and_print_report("Starting UI exploration...")
     append_and_print_report(f"Exploration Start Time: {start_time}")
