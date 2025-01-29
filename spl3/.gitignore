@@ -1,2 +1,4 @@
 .idea/*
 dumps/
+build/
+dist/
