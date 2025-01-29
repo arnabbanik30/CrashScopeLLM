@@ -23,6 +23,11 @@ def main():
 
     args = parser.parse_args()
 
+    if args.analyze:
+        if args.apk_path is None:
+            print("the path option -p is required with --analyze")
+            exit(1)
+
     if len(sys.argv) == 1:
         parser.print_usage()
         sys.exit()
@@ -57,7 +62,7 @@ def main():
 
         append_and_print_report("Dumping Stack Trace of the crash...") if ret != 0 else ""
         dump = get_error_dump_after_crash() if ret != 0 else ""
-        ai_summary = get_crash_summary(dump, package_name) if ret != 0 else ""
+        ai_summary = get_crash_summary(dump, package_name) if ret != 0 and args.enable_crash_summary else ""
 
         append_and_print_report("UI exploration complete.")
         dir_name = create_next_directory("dump")
