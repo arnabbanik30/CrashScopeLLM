@@ -4,6 +4,7 @@ import sys
 from apk_install import install_apk
 from arg_parser import parser
 from dfs_basic import dfs
+from dump_error_output import get_error_dump_after_crash
 from formatted_time import get_formatted_time
 from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
@@ -13,6 +14,7 @@ from package_name import get_package_name
 import uiautomator2 as u2
 
 from run_report import append_and_print_report
+from summarize_crash_report import get_crash_summary
 
 
 def main():
@@ -48,8 +50,12 @@ def main():
         xpath = get_package_xpath(package_name)
 
         nodes = get_activity_info(xpath, device)
-        dfs(nodes.all(), package_name, device)
-
+        ret = dfs(nodes.all(), package_name, device)
+        if ret != 0:
+            append_and_print_report("Dumping Stack Trace of the crash...")
+            dump = get_error_dump_after_crash()
+            # print(dump)
+            ai_summary = get_crash_summary(dump, package_name)
 
     except Exception as e:
         append_and_print_report(f"An error occurred: {e}")

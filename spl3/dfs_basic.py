@@ -8,7 +8,7 @@ from visited import VISITED
 
 import uiautomator2 as u2
 
-def dfs(nodes, package_name, device: u2.Device):
+def dfs(nodes, package_name, device: u2.Device) -> int:
     app_crashed = 0
     for node in nodes:
         before_activity = device.app_current()['activity']
@@ -42,3 +42,5 @@ def dfs(nodes, package_name, device: u2.Device):
         if before_activity != current_activity:
             append_and_print_report("Going back")
             device.press("back")
+
+    return 0
