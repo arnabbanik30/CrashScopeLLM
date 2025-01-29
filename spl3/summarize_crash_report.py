@@ -17,7 +17,6 @@ def get_crash_summary(dump, package_name):
 
     assistant_message = response['message']['content']
 
-    append_and_print_report("AI Summary: ")
-    append_and_print_report(assistant_message)
+    append_and_print_report("Generated AI summary of the crash")
 
     return assistant_message
