@@ -9,7 +9,7 @@ from dump_error_output import get_error_dump_after_crash
 from formatted_time import get_formatted_time
 from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
-from globals import start_time, run_report
+from globals import start_time, run_report, replayable_script
 from launch_app import launch_app
 from package_name import get_package_name
 import uiautomator2 as u2
@@ -60,6 +60,10 @@ def main():
 
         ret = dfs(nodes.all(), package_name, device)
 
+        append_and_print_report("Generating replayable script")
+        script = "\n".join(replayable_script)
+
+
         append_and_print_report("Dumping Stack Trace of the crash...") if ret != 0 else ""
         dump = get_error_dump_after_crash() if ret != 0 else ""
         ai_summary = get_crash_summary(dump, package_name) if ret != 0 and args.enable_crash_summary else ""
@@ -67,7 +71,11 @@ def main():
         append_and_print_report("UI exploration complete.")
         dir_name = create_next_directory("dump")
         filepath = f"./dumps/{dir_name}"
+
         save_files(filepath, "\n".join(run_report), "run_report", "md")
+
+        save_files(filepath, script, "replayable_script_commands", "txt")
+
         if len(dump) != 0:
             save_files(filepath, dump, "stack_trace", "txt")
         if len(ai_summary) != 0:
