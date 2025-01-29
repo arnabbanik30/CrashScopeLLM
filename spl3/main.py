@@ -3,21 +3,39 @@ import sys
 
 from apk_install import install_apk
 from arg_parser import parser
+from create_new_directory import create_next_directory
 from dfs_basic import dfs
+from dump_error_output import get_error_dump_after_crash
 from formatted_time import get_formatted_time
 from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
-from globals import start_time
+from globals import start_time, run_report, replayable_script
 from launch_app import launch_app
 from package_name import get_package_name
 import uiautomator2 as u2
 
+from replayable_script_runner import script_runner
 from run_report import append_and_print_report
+from save_files import save_files
+from summarize_crash_report import get_crash_summary
 
 
 def main():
 
     args = parser.parse_args()
+
+    if args.analyze:
+        if args.apk_path is None:
+            print("the path option -p is required with --analyze")
+            exit(1)
+
+    if args.run_replayable_script:
+        if args.script_path is None:
+            print("provide the script path with -s or --script-path")
+            exit(1)
+        if args.apk_path is None:
+            print("the path option -p is required")
+            exit(1)
 
     if len(sys.argv) == 1:
         parser.print_usage()
@@ -41,6 +59,9 @@ def main():
     launch_app(package_name)
 
     # set_start_time()
+    if args.run_replayable_script:
+        script_runner(args.script_path)
+        exit(0)
 
     append_and_print_report("Starting UI exploration...")
     append_and_print_report(f"Exploration Start Time: {start_time}")
@@ -48,13 +69,33 @@ def main():
         xpath = get_package_xpath(package_name)
 
         nodes = get_activity_info(xpath, device)
-        dfs(nodes.all(), package_name, device)
+
+        ret = dfs(nodes.all(), package_name, device)
+
+        append_and_print_report("Generating replayable script")
+        script = "\n".join(replayable_script)
+
+
+        append_and_print_report("Dumping Stack Trace of the crash...") if ret != 0 else ""
+        dump = get_error_dump_after_crash() if ret != 0 else ""
+        ai_summary = get_crash_summary(dump, package_name) if ret != 0 and args.enable_crash_summary else ""
+
+        append_and_print_report("UI exploration complete.")
+        dir_name = create_next_directory("dump")
+        filepath = f"./dumps/{dir_name}"
+
+        save_files(filepath, "\n".join(run_report), "run_report", "md")
+
+        save_files(filepath, script, "replayable_script_commands", "txt")
+
+        if len(dump) != 0:
+            save_files(filepath, dump, "stack_trace", "txt")
+        if len(ai_summary) != 0:
+            save_files(filepath, ai_summary, "crash_report_summary", "md")
 
 
     except Exception as e:
         append_and_print_report(f"An error occurred: {e}")
-    finally:
-        append_and_print_report("UI exploration complete.")
 
 
 

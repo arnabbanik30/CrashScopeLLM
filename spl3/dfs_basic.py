@@ -1,14 +1,16 @@
+from action_interaction import ACTION
 from check_visisted import check_visited
 from get_activity_info import get_activity_info
 from get_package_xpath import get_package_xpath
 from globals import visited
 from interact_ui import interact_ui
+from replayable_script_generator import add_to_replayable_script
 from run_report import append_and_print_report
 from visited import VISITED
 
 import uiautomator2 as u2
 
-def dfs(nodes, package_name, device: u2.Device):
+def dfs(nodes, package_name, device: u2.Device) -> int:
     app_crashed = 0
     for node in nodes:
         before_activity = device.app_current()['activity']
@@ -42,3 +44,6 @@ def dfs(nodes, package_name, device: u2.Device):
         if before_activity != current_activity:
             append_and_print_report("Going back")
             device.press("back")
+            add_to_replayable_script(None, ACTION.BACK)
+
+    return 0
