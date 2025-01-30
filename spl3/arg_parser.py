@@ -37,4 +37,10 @@ parser.add_argument(
     help="The path to the script file (required)",
     required=False
 )
+
+parser.add_argument(
+    "--ai-explore",
+    help="Use this option to explore the UI using AI",
+    action="store_true"
+)
 argcomplete.autocomplete(parser)
