@@ -5,7 +5,7 @@ from bound_calculation import get_clickable_bound
 
 def get_cmd(str):
     if "edit" in str.lower():
-        return f"adb shell input text {random.randint(-100, 100)}"
+        return f"adb shell input keyevent KEYCODE_DEL; adb shell input text {random.randint(-100, 100)}"
     else:
         return ""
 
@@ -24,5 +24,5 @@ def get_prompt(node: u2.xpath.XMLElement):
     prompt += "You can also press back with adb shell input keyevent KEYCODE_BACK"
 
     b = random.choices([True, False], weights=[6, 4])[0]
-    shell = f"adb shell input tap {x} {y}" + get_cmd(node.info['className']) if b else "adb shell input keyevent KEYCODE_BACK"
+    shell = f"adb shell input tap {x} {y};" + get_cmd(node.info['className']) if b else "adb shell input keyevent KEYCODE_BACK"
     return prompt, shell
